@@ -43,5 +43,4 @@ UsuarioRouter.delete('/:nombre', async (req, res) => {
 })
 
 
-
 export default UsuarioRouter;

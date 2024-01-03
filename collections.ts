@@ -14,10 +14,9 @@ const schemaUsuario = new mongoose.Schema({
 const ModelUsuario = mongoose.model('usuario', schemaUsuario);
 
 const schemaHabilidad = new mongoose.Schema({
-    id: {
+    abilityNumber: {
         type: Number,
-        require: true,
-        unique: true
+        require: true
     },
     nombre: {
         type: String,

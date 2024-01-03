@@ -23,7 +23,7 @@ const schemaHabilidad = new mongoose.Schema({
         type: String,
         require: true
     },
-    descricion: {
+    descripcion: {
         type: String,
         require: true
     }

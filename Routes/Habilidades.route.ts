@@ -8,7 +8,12 @@ HabilidadesRouter.get('/', async (req, res) => {
 });
 
 HabilidadesRouter.post('/', async (req, res) => {
-    res.status(201).json({});
+    const newAbility = await ModelHabilidad.create({
+        id: req.body.id,
+        nombre: req.body.nombre,
+        descripcion: req.body.descripcion
+    });
+    res.status(201).json(newAbility);
 });
 
 export default HabilidadesRouter;

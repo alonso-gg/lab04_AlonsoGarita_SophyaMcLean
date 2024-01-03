@@ -1,6 +1,4 @@
 import mongoose, { Schema } from "mongoose";
-import { modelUsuario, modelHabilidad, modelPokemon } from './collections.ts';
-import { Express, Request, Response } from "express";
 import express = require("express");
 import UsuarioRouter from "./Routes/Usuario.route.ts";
 

@@ -5,13 +5,13 @@ const schemaUsuario = new mongoose.Schema({
         type: String,
         require: true
     },
-    constrasena: {
+    contrasena: {
         type: String,
         require: true
     }
 });
 
-const modelUsuario = mongoose.model('usuario', schemaUsuario);
+const ModelUsuario = mongoose.model('usuario', schemaUsuario);
 
 const schemaHabilidad = new mongoose.Schema({
     id: {
@@ -29,7 +29,7 @@ const schemaHabilidad = new mongoose.Schema({
     }
 });
 
-const modelHabilidad = mongoose.model('habilidad', schemaHabilidad);
+const ModelHabilidad = mongoose.model('habilidad', schemaHabilidad);
 
 const schemaPokemon = new mongoose.Schema({
     id: {
@@ -58,6 +58,6 @@ const schemaPokemon = new mongoose.Schema({
     }
 });
 
-const modelPokemon = mongoose.model('pokemon', schemaPokemon);
+const ModelPokemon = mongoose.model('pokemon', schemaPokemon);
 
-export {modelUsuario, modelHabilidad, modelPokemon};
+export {ModelUsuario, ModelHabilidad, ModelPokemon};

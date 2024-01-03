@@ -1,19 +1,19 @@
 import { Router } from "express";
-import { modelUsuario } from "../collections";
+import { ModelUsuario } from "../collections";
 
 const UsuarioRouter = Router();
 
 UsuarioRouter.get('/', async (req, res) => {
-    const allUsers = await modelUsuario.find({}).lean().exec()
-    res.status(200).json({message: 'From GET /users'});
+    const allUsers = await ModelUsuario.find({}).lean().exec()
+    res.status(200).json(allUsers);
 });
 
-UsuarioRouter.get('/:id', (req, res) => {
-    res.status(200).json({message: 'From GET /users/:id'});
-});
-
-UsuarioRouter.post('/', (req, res) => {
-    res.status(200).json({message: 'From POST /users'});
+UsuarioRouter.post('/', async (req, res) => {
+    const newUser = await ModelUsuario.create({
+        nombre: req.body.nombre,
+        contrasena: req.body.contrasena
+    });
+    res.status(201).json(newUser);
 });
 
 export default UsuarioRouter;

@@ -19,7 +19,6 @@ AbilitiesRouter.post('/', async (req, res) => {
     }
 
     const newAbility = await ModelAbility.create({
-        id: req.body.id,
         name: name,
         description: description
     });

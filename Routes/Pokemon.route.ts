@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ModelAbility, ModelPokemon } from "../collections";
+import { ModelAbility, ModelPokemon} from "../collections";
 
 const PokemonRouter = Router();
 
@@ -24,13 +24,12 @@ PokemonRouter.get('/:id', async (req, res) => {
 
 //Crea un pokemon
 PokemonRouter.post('/', async (req, res) => {
-    const id = req.body.id;
     const name = req.body.name;
     const abilities = req.body.abilities;
     const mainType = req.body.mainType;
     const description = req.body.description;
 
-    if (id === null || name === null || abilities === null ||
+    if (name === null || abilities === null ||
         mainType === null || description === null) {
         res.status(500).send('Can not create a pokemon without the following data: name, abilities, mainType, description.');
         return;
@@ -49,7 +48,6 @@ PokemonRouter.post('/', async (req, res) => {
             await Promise.all(abilidadesPromises);
 
             const nuevoPokemon = await ModelPokemon.create({
-                id: id,
                 name: name,
                 abilities: abilities,
                 mainType: mainType,
@@ -59,6 +57,7 @@ PokemonRouter.post('/', async (req, res) => {
 
             res.status(201).json(nuevoPokemon);
             return;
+
         } catch (error) {
             res.status(404).json({message: error.message});
             return;

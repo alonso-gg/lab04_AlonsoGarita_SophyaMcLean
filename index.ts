@@ -27,7 +27,7 @@ const main = async () => {
     await mongoose.connect(connectionString);
 
     app.listen(port, () => {
-        console.log(`La aplicación está escuchando el puerto ${port}.`);
+        console.log(`Listening port ${port}.`);
     });
 }
 

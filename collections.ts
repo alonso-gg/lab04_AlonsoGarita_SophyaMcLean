@@ -28,7 +28,7 @@ const schemaHability = new mongoose.Schema({
     }
 });
 
-const ModelAbility = mongoose.model('hability', schemaHability);
+const ModelAbility = mongoose.model('ability', schemaHability);
 
 const schemaPokemon = new mongoose.Schema({
     id: {
@@ -41,7 +41,7 @@ const schemaPokemon = new mongoose.Schema({
     },
     abilities: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'habilitys'
+        ref: 'abilities'
       },],
     mainType: {
         type: String,

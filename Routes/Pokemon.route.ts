@@ -16,7 +16,10 @@ PokemonRouter.get('/', async (req, res) => {
 //Obtiene la información únicamente del pokemon con el ID indicado
 PokemonRouter.get('/:id', async (req, res) => {
     const {id} = req.params; //Obtiene el id que le enviaron por parámetros
-    const searchedPokemon = await ModelPokemon.find({id}).lean().exec(); 
+    const searchedPokemon = await ModelPokemon.find({id}, {projection: { __v: 0 }}).populate({
+        path: 'abilities',
+        model: 'ability'
+      }).exec();
     //Si existe ese pokemon
     if (searchedPokemon.length === 0) {
         res.status(404).json({message: `Could not find a pokemon with ID #${id}.`});
@@ -35,7 +38,7 @@ PokemonRouter.post('/', async (req, res) => {
 
     if (name === null || abilities === null ||
         mainType === null || description === null) {
-        res.status(500).send('Can not create a pokemon without the following data: name, abilities, mainType, description.');
+        res.status(500).send('Can not create a pokemon without name, abilities, mainType or description.');
         return;
     } else {
         try {

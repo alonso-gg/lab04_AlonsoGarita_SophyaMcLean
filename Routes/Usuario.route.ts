@@ -1,46 +1,57 @@
 import { Router } from "express";
-import { ModelUsuario } from "../collections";
+import { ModelUsers } from "../collections";
 
-const UsuarioRouter = Router();
+const UserRouter = Router();
 
-UsuarioRouter.get('/', async (req, res) => {
-    const allUsers = await ModelUsuario.find({}).lean().exec()
+//Obtiene todos los usuarios registrados
+UserRouter.get('/', async (req, res) => {
+    const allUsers = await ModelUsers.find({}).lean().exec()
     res.status(200).json(allUsers);
 });
 
-UsuarioRouter.post('/', async (req, res) => {
-    const newUser = await ModelUsuario.create({
-        nombre: req.body.nombre,
-        contrasena: req.body.contrasena
+//Crea un usuario con su nombre y contraseña
+UserRouter.post('/', async (req, res) => {
+    const name = req.body.name;
+    const password = req.body.password;
+
+    if(!name || !password){
+        res.status(500).send('Can not create an user without name nor password.');
+        return;
+    }
+
+    console.log(req.body.name);
+
+    const newUser = await ModelUsers.create({
+        name: name,
+        password: password
     });
     res.status(201).json(newUser);
 });
 
-//Modifica UN usuario por su username (nombre)
-UsuarioRouter.put('/:nombre',async (req,res) => {
-    const {nombre} = req.params; //Obtiene el username que le enviaron por parámetros
-    const usuarioBuscado = await ModelUsuario.find({nombre}).lean().exec(); 
-    if (usuarioBuscado.length === 0) {
-        res.status(404).json({Mensaje: `No hay usuarios registrados con el nombre ${nombre}` });
+//Modifica un usuario por su username (nombre)
+UserRouter.put('/:name',async (req,res) => {
+    const {name} = req.params; //Obtiene el username que le enviaron por parámetros
+    const searchedUser = await ModelUsers.find({name}).lean().exec(); 
+    if (searchedUser.length === 0) {
+        res.status(404).json({message: `Could not find user${name}`});
     }
     else {
-        await ModelUsuario.updateOne({ nombre: nombre }, { $set: { contrasena: req.body.contrasena } });
-        res.status(202).json({Mensaje: `El usuario ${nombre} fue modificado exitosamente.` });
+        await ModelUsers.updateOne({ name: name }, { $set: { password: req.body.password } });
+        res.status(202).json({message: `The user ${name} was modified successfully.`});
     }    
 })
 
-// Es un servicio para borrar un usuario
-UsuarioRouter.delete('/:nombre', async (req, res) => {
-    const {nombre} = req.params; //Obtiene el username que le enviaron por parámetros
-    const usuarioBuscado = await ModelUsuario.find({nombre}).lean().exec(); 
+//Es un servicio para borrar un usuario
+UserRouter.delete('/:name', async (req, res) => {
+    const {name} = req.params; //Obtiene el username que le enviaron por parámetros
+    const usuarioBuscado = await ModelUsers.find({name}).lean().exec(); 
     if (usuarioBuscado.length === 0) {
-        res.status(404).json({Mensaje: `No hay usuarios registrados con el nombre ${nombre}` });
+        res.status(404).json({message: `Could not find user${name}`});
     }
     else {
-        await ModelUsuario.deleteOne({ nombre: nombre }, { $set: { contrasena: req.body.contrasena } });
-        res.status(202).json({Mensaje: `El usuario ${nombre} se eliminó con éxito!` });
+        await ModelUsers.deleteOne({ name: name });
+        res.status(202).json({message: `The user ${name} was deleted successfully.`});
     }  
 })
 
-
-export default UsuarioRouter;
+export default UserRouter;

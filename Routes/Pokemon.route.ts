@@ -5,7 +5,11 @@ const PokemonRouter = Router();
 
 //Obtiene todos los pokemones registrados
 PokemonRouter.get('/', async (req, res) => {
-    const allPokemons = await ModelPokemon.find({}).lean().exec()
+    const allPokemons = await ModelPokemon.find({}).populate({
+        path: 'abilities',
+        model: 'ability'
+      }).exec();
+
     res.status(200).json(allPokemons);
 });
 
@@ -36,7 +40,7 @@ PokemonRouter.post('/', async (req, res) => {
     } else {
         try {
             // Validar que todas las habilidades del array existan
-            const abilidadesPromises = abilities.map(async (ability) => {
+            /*const abilidadesPromises = abilities.map(async (ability) => {
                 const searchedAbility = await ModelAbility.find({ ability }).lean().exec();
                 if (searchedAbility.length === 0) {
                     res.status(404).json({message: `Could not find an ability with ID #${ability}`});
@@ -45,7 +49,7 @@ PokemonRouter.post('/', async (req, res) => {
             });
 
             //Esto es para que se espere a que se revisen todas las habilidades
-            await Promise.all(abilidadesPromises);
+            await Promise.all(abilidadesPromises);*/
 
             const nuevoPokemon = await ModelPokemon.create({
                 name: name,

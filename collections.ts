@@ -41,7 +41,7 @@ const schemaPokemon = new mongoose.Schema({
     },
     abilities: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'abilities'
+        ref: 'ability'
       },],
     mainType: {
         type: String,

@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { ModelHabilidad, ModelPokemon } from "../collections";
+// import {authenticationMiddleware} from "../index.ts";
 
 const PokemonRouter = Router();
 
 PokemonRouter.get('/', async (req, res) => {
-    const pokemones = await ModelPokemon.find({}).lean().exec()
+    const pokemones = await ModelPokemon.find({}).lean().exec();
     res.status(200).json(pokemones);
 });
 

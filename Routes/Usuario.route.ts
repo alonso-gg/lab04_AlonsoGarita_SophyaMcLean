@@ -3,6 +3,11 @@ import { ModelUsuario } from "../collections";
 
 const UsuarioRouter = Router();
 
+// //Función privada para obtener todos los Usuarios de la BD
+// const getAllUsers = async () => {
+//     return await ModelUsuario.find({}).lean().exec();
+// };
+
 UsuarioRouter.get('/', async (req, res) => {
     const allUsers = await ModelUsuario.find({}).lean().exec()
     res.status(200).json(allUsers);
@@ -42,5 +47,5 @@ UsuarioRouter.delete('/:nombre', async (req, res) => {
     }  
 })
 
-
+//Se exporta el router y la función "privada"
 export default UsuarioRouter;

@@ -16,7 +16,7 @@ PokemonRouter.get('/',authenticationMiddleware,async (req, res) => {
 //Obtiene la información únicamente del pokemon con el ID indicado
 PokemonRouter.get('/:id',authenticationMiddleware, async (req, res) => {
     const {id} = req.params; //Obtiene el id que le enviaron por parámetros
-    const searchedPokemon = await ModelPokemon.find({id}, {projection: { __v: 0 }}).populate({
+    const searchedPokemon = await ModelPokemon.find({"_id":id}, {projection: { __v: 0 }}).populate({
         path: 'abilities',
         model: 'ability'
       }).exec();

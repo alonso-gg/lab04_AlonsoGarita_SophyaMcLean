@@ -1,15 +1,16 @@
 import { Router } from "express";
-import { ModelAbility } from "../collections";
+import { ModelAbility, authenticationMiddleware } from "../collections";
+
 
 const AbilitiesRouter = Router();
 
-AbilitiesRouter.get('/', async (req, res) => {
+AbilitiesRouter.get('/',authenticationMiddleware, async (req, res) => {
     const allAbilities = await ModelAbility.find({}).lean().exec()
     res.status(200).json(allAbilities);
 });
 
 
-AbilitiesRouter.post('/', async (req, res) => {
+AbilitiesRouter.post('/',authenticationMiddleware,async (req, res) => {
     const name = req.body.name;
     const description = req.body.description;
 

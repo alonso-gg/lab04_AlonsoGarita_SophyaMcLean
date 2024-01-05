@@ -33,7 +33,7 @@ UserRouter.put('/:name',async (req,res) => {
     const {name} = req.params; //Obtiene el username que le enviaron por parámetros
     const searchedUser = await ModelUsers.find({name}).lean().exec(); 
     if (searchedUser.length === 0) {
-        res.status(404).json({message: `Could not find user${name}`});
+        res.status(404).json({message: `Could not find user ${name}`});
     }
     else {
         await ModelUsers.updateOne({ name: name }, { $set: { password: req.body.password } });

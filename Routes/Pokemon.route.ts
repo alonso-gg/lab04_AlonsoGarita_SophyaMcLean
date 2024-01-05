@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { ModelAbility, ModelPokemon} from "../collections";
+import { ModelAbility, ModelPokemon, authenticationMiddleware} from "../collections";
 
 const PokemonRouter = Router();
 
 //Obtiene todos los pokemones registrados
-PokemonRouter.get('/', async (req, res) => {
+PokemonRouter.get('/',authenticationMiddleware,async (req, res) => {
     const allPokemons = await ModelPokemon.find({}, {projection: { __v: 0 }}).populate({
         path: 'abilities',
         model: 'ability'
@@ -14,7 +14,7 @@ PokemonRouter.get('/', async (req, res) => {
 });
 
 //Obtiene la información únicamente del pokemon con el ID indicado
-PokemonRouter.get('/:id', async (req, res) => {
+PokemonRouter.get('/:id',authenticationMiddleware, async (req, res) => {
     const {id} = req.params; //Obtiene el id que le enviaron por parámetros
     const searchedPokemon = await ModelPokemon.find({id}, {projection: { __v: 0 }}).populate({
         path: 'abilities',
@@ -30,7 +30,7 @@ PokemonRouter.get('/:id', async (req, res) => {
 });
 
 //Crea un pokemon
-PokemonRouter.post('/', async (req, res) => {
+PokemonRouter.post('/',authenticationMiddleware, async (req, res) => {
     const name = req.body.name;
     const abilities = req.body.abilities;
     const mainType = req.body.mainType;
@@ -73,7 +73,7 @@ PokemonRouter.post('/', async (req, res) => {
     }
 });
 
-PokemonRouter.put('/:id', async (req, res) => {
+PokemonRouter.put('/:id',authenticationMiddleware, async (req, res) => {
     const {id} = req.params;
     const searchedPokemon = await ModelPokemon.find({id}).lean().exec(); 
     if (searchedPokemon.length === 0) {
@@ -91,7 +91,7 @@ PokemonRouter.put('/:id', async (req, res) => {
     }   
 });
 
-PokemonRouter.delete('/:id', async (req, res) => {
+PokemonRouter.delete('/:id',authenticationMiddleware, async (req, res) => {
     const {id} = req.params; //Obtiene el npumero de pokemon que le enviaron por parámetros
     const searchedPokemon = await ModelPokemon.find({id}).lean().exec(); 
     if (searchedPokemon.length === 0) {

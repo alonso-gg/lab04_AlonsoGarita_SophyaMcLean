@@ -16,7 +16,7 @@ PokemonRouter.get('/',authenticationMiddleware,async (req, res) => {
 //Obtiene la información únicamente del pokemon con el ID indicado
 PokemonRouter.get('/:id',authenticationMiddleware, async (req, res) => {
     const {id} = req.params; //Obtiene el id que le enviaron por parámetros
-    const searchedPokemon = await ModelPokemon.find({"_id":id}, {projection: { __v: 0 }}).populate({
+    const searchedPokemon = await ModelPokemon.find({"id":id}, {projection: { __v: 0 }}).populate({
         path: 'abilities',
         model: 'ability'
       }).exec();
@@ -75,12 +75,12 @@ PokemonRouter.post('/',authenticationMiddleware, async (req, res) => {
 
 PokemonRouter.put('/:id',authenticationMiddleware, async (req, res) => {
     const {id} = req.params;
-    const searchedPokemon = await ModelPokemon.find({id}).lean().exec(); 
+    const searchedPokemon = await ModelPokemon.find({"id":id}).lean().exec(); 
     if (searchedPokemon.length === 0) {
         res.status(404).json({message: `Could not find a pokemon with ID #${id}`});
     }
     else {
-        await ModelPokemon.updateOne({ id: id }, { $set: { 
+        await ModelPokemon.updateOne({id: id }, { $set: { 
             name: req.body.name,
             abilities:  req.body.abilities,
             mainType:  req.body.mainType,
@@ -93,12 +93,12 @@ PokemonRouter.put('/:id',authenticationMiddleware, async (req, res) => {
 
 PokemonRouter.delete('/:id',authenticationMiddleware, async (req, res) => {
     const {id} = req.params; //Obtiene el npumero de pokemon que le enviaron por parámetros
-    const searchedPokemon = await ModelPokemon.find({id}).lean().exec(); 
+    const searchedPokemon = await ModelPokemon.find({"id":id}).lean().exec(); 
     if (searchedPokemon.length === 0) {
         res.status(404).json({message: `Could not find a pokemon with ID #${id}`});
     }
     else {
-        await ModelPokemon.deleteOne({ id: id });
+        await ModelPokemon.deleteOne({id: id });
         res.status(202).json({message: `Pokemon #${id} was deleted successfully.`});
     } 
 });

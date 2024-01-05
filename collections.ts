@@ -1,57 +1,56 @@
 import mongoose, { Schema } from "mongoose";
 
-const schemaUsuario = new mongoose.Schema({
-    nombre: {
+const schemaUsers = new mongoose.Schema({
+    name: {
         type: String,
         require: true
     },
-    contrasena: {
+    password: {
         type: String,
         require: true
     }
 });
 
-const ModelUsuario = mongoose.model('usuario', schemaUsuario);
+const ModelUsers = mongoose.model('user', schemaUsers);
 
-const schemaHabilidad = new mongoose.Schema({
-    abilityNumber: {
+const schemaHability = new mongoose.Schema({
+    id: {
         type: Number,
         require: true
     },
-    nombre: {
+    name: {
         type: String,
         require: true
     },
-    descripcion: {
+    description: {
         type: String,
         require: true
     }
 });
 
-const ModelHabilidad = mongoose.model('habilidad', schemaHabilidad);
+const ModelAbility = mongoose.model('ability', schemaHability);
 
 const schemaPokemon = new mongoose.Schema({
     id: {
         type: Number,
-        require: true,
-        unique: true
+        require: true
     },
-    nombre: {
+    name: {
         type: String,
         require: true
     },
-    habilidades: [{
+    abilities: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'habilidads'
+        ref: 'ability'
       },],
-    tipoPrimario: {
+    mainType: {
         type: String,
         require: true
     },
-    tipoSecundario: {
+    secondType: {
         type: String
     },
-    descricion: {
+    description: {
         type: String,
         require: true
     }
@@ -59,4 +58,4 @@ const schemaPokemon = new mongoose.Schema({
 
 const ModelPokemon = mongoose.model('pokemon', schemaPokemon);
 
-export {ModelUsuario, ModelHabilidad, ModelPokemon};
+export {ModelUsers, ModelAbility, ModelPokemon};

@@ -1,73 +1,106 @@
 import { Router } from "express";
-import { ModelHabilidad, ModelPokemon } from "../collections";
-// import {authenticationMiddleware} from "../index.ts";
+import { ModelAbility, ModelPokemon} from "../collections";
 
 const PokemonRouter = Router();
 
+//Obtiene todos los pokemones registrados
 PokemonRouter.get('/', async (req, res) => {
-    const pokemones = await ModelPokemon.find({}).lean().exec();
-    res.status(200).json(pokemones);
+    const allPokemons = await ModelPokemon.find({}, {projection: { __v: 0 }}).populate({
+        path: 'abilities',
+        model: 'ability'
+      }).exec();
+
+    res.status(200).json(allPokemons);
 });
 
+//Obtiene la información únicamente del pokemon con el ID indicado
 PokemonRouter.get('/:id', async (req, res) => {
     const {id} = req.params; //Obtiene el id que le enviaron por parámetros
-    const pokemonBuscado = await ModelPokemon.find({id}).lean().exec(); 
+    const searchedPokemon = await ModelPokemon.find({id}, {projection: { __v: 0 }}).populate({
+        path: 'abilities',
+        model: 'ability'
+      }).exec();
     //Si existe ese pokemon
-    if (pokemonBuscado.length === 0) {
-        res.status(404).json({Mensaje: `No hay pokemones registrados con el id ${id}` });
+    if (searchedPokemon.length === 0) {
+        res.status(404).json({message: `Could not find a pokemon with ID #${id}.`});
     }
     else {
-        res.status(200).json(pokemonBuscado);
+        res.status(200).json(searchedPokemon);
     }        
 });
 
+//Crea un pokemon
 PokemonRouter.post('/', async (req, res) => {
-    const pnombre = req.body.nombre;
-    const phabilidades = req.body.habilidades;
-    const ptipoPrimario = req.body.tipoPrimario;
-    const pdescripcion = req.body.descripcion;
+    const name = req.body.name;
+    const abilities = req.body.abilities;
+    const mainType = req.body.mainType;
+    const description = req.body.description;
 
-    if (pnombre === null || phabilidades === null ||
-        ptipoPrimario === null || pdescripcion === null) {
-        res.status(500).send('No puede dejar espacios nulos al crear un pokemon.');
+    if (name === null || abilities === null ||
+        mainType === null || description === null) {
+        res.status(500).send('Can not create a pokemon without name, abilities, mainType or description.');
         return;
     } else {
         try {
             // Validar que todas las habilidades del array existan
-            const habilidadesPromises = phabilidades.map(async (habilidad) => {
-                const habilidadBuscada = await ModelHabilidad.find({ habilidad }).lean().exec();
-                if (habilidadBuscada.length === 0) {
-                    res.status(404).json({Mensaje: `No hay habilidades registrados con el id ${habilidadBuscada}` });
+            const abilidadesPromises = abilities.map(async (ability) => {
+                let ObjectId = require('mongodb').ObjectId;
+                const searchedAbility = await ModelAbility.find({"_id": new ObjectId(ability)}).lean().exec();
+                if (searchedAbility.length === 0) {
+                    res.status(404).json({message: `Could not find an ability with ID #${ability}`});
                     return;
                 }
             });
 
             //Esto es para que se espere a que se revisen todas las habilidades
-            await Promise.all(habilidadesPromises);
+            await Promise.all(abilidadesPromises);
 
             const nuevoPokemon = await ModelPokemon.create({
-                nombre: pnombre,
-                habilidades: phabilidades,
-                tipoPrimario: ptipoPrimario,
-                tipoSecundario: req.body.tipoSecundario,
-                descripcion: pdescripcion
+                name: name,
+                abilities: abilities,
+                mainType: mainType,
+                secondType: req.body.secondType,
+                description: description
             });
 
             res.status(201).json(nuevoPokemon);
             return;
+
         } catch (error) {
-            res.status(404).json({ Mensaje: error.message });
+            res.status(404).json({message: error.message});
             return;
         }
     }
 });
 
 PokemonRouter.put('/:id', async (req, res) => {
-    res.status(201).json({});
+    const {id} = req.params;
+    const searchedPokemon = await ModelPokemon.find({id}).lean().exec(); 
+    if (searchedPokemon.length === 0) {
+        res.status(404).json({message: `Could not find a pokemon with ID #${id}`});
+    }
+    else {
+        await ModelPokemon.updateOne({ id: id }, { $set: { 
+            name: req.body.name,
+            abilities:  req.body.abilities,
+            mainType:  req.body.mainType,
+            secondType: req.body.secondType,
+            description:  req.body.description
+        } });
+        res.status(202).json({message: `Pokemon #${id} was modified successfully.`});
+    }   
 });
 
-PokemonRouter.delete('/', async (req, res) => {
-    res.status(201).json({});
+PokemonRouter.delete('/:id', async (req, res) => {
+    const {id} = req.params; //Obtiene el npumero de pokemon que le enviaron por parámetros
+    const searchedPokemon = await ModelPokemon.find({id}).lean().exec(); 
+    if (searchedPokemon.length === 0) {
+        res.status(404).json({message: `Could not find a pokemon with ID #${id}`});
+    }
+    else {
+        await ModelPokemon.deleteOne({ id: id });
+        res.status(202).json({message: `Pokemon #${id} was deleted successfully.`});
+    } 
 });
 
 export default PokemonRouter;

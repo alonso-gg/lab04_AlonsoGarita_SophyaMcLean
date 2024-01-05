@@ -59,47 +59,22 @@ const schemaPokemon = new mongoose.Schema({
 
 const ModelPokemon = mongoose.model('pokemon', schemaPokemon);
 
-// const authenticationMiddleware = async (req: Request, res: Response, next: () => any) => {
-//     const usuarios = await ModelUsers.find({}).lean().exec();;
-//     const usuarioRegistrado = req.headers.authorization;
-//     const [receivedName, receivedPassword] = Buffer.from(usuarioRegistrado.split(' ')[1], 'base64')
-//     .toString('utf-8')
-//     .split(':');
-
-//     console.log(receivedName);
-//     console.log(receivedPassword);
-//     //decodificar el user
-//     if (usuarioRegistrado === "Basic Og==") {
-//         return res.status(401).json({ Message: "You didn't gave an user for authentication." });
-//     }
-//     else{
-//         usuarios.some(usuario => {
-//             if(receivedName === usuario.name && receivedPassword===usuario.password) {
-//                 next();
-                
-//             }
-//         })
-//         return res.status(401).json({Message:`The user ${receivedName} is not authorized.`});
-
-//     };
-
-// }
-
 const authenticationMiddleware = async (req: Request, res: Response, next: () => any) => {
-    const usuarios = await ModelUsers.find({}).lean().exec();
     const usuarioRegistrado = req.headers.authorization;
 
+    //cuando no se pone nada, postman por defecto escribe Basic Og==
     if (usuarioRegistrado==="Basic Og==") {
         return res.status(401).json({ Message: "You didn't provide a user for authentication." });
     }
 
+    //Decodificar la info porque viene en base64
     const [receivedName, receivedPassword] = Buffer.from(usuarioRegistrado.split(' ')[1], 'base64')
         .toString('utf-8')
         .split(':');
 
-    const validUser = usuarios.some((usuario: any) => usuario.name === receivedName && usuario.password === receivedPassword);
-
-    if (validUser) {
+    const validUser = await ModelUsers.find({"name": receivedName, "password": receivedPassword}).lean().exec();
+    //si encuentra un usuario con esos datos, continúa a la siguiente función (get, post,etc)
+    if(validUser.length > 0){
         next();
     } else {
         return res.status(401).json({ Message: `The user ${receivedName} is not authorized.`});
